@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base Colors - Black & White Theme */
+    --background: 0 0% 0%; /* Pure Black */
+    --foreground: 0 0% 98%; /* White */
+
+    /* Card */
+    --card: 0 0% 7%; /* Dark Gray for visible cards */
+    --card-foreground: 0 0% 98%; /* White */
+
+    /* Popover */
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary (for interactive elements) */
+    --primary: 0 0% 98%; /* White */
+    --primary-foreground: 0 0% 9%; /* Black */
+
+    /* Secondary */
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    /* Muted */
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 63%;
+
+    /* Accent */
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    /* Destructive */
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Border & Ring */
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 0% 30%; /* Dark gray ring for focus */
+
+    /* Radius */
+    --radius: 0.5rem; /* This will bring back rounded corners */
+  }
+
+  /* We removed the .dark class because you are only using one theme. */
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground; /* Use theme variables */
+    /* You liked the backdrop blur, so we keep it. */
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: default;
+  }
+}
+
+/* Nav indicator styles preserved */
+.nav-indicator {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 1rem;
+  height: 1px;
+  width: 2rem;
+  background-color: hsl(var(--muted-foreground));
+  transition: all 0.15s ease-in-out;
+}
+
+.group:hover .nav-indicator,
+.group:focus-within .nav-indicator {
+  width: 4rem;
+  height: 2px;
+  background-color: hsl(var(--foreground));
+}
+
+.nav-indicator.active,
+.group .nav-indicator.active {
+  width: 4rem;
+  height: 2px;
+  background-color: hsl(var(--foreground));
+}
