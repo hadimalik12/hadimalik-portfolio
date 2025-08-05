@@ -66,7 +66,7 @@ const jobProjects = [
     description:
       "My portfolio website (what you are currently viewing). Based on Brittany Chiang's website (they awesome).",
     skills: ["Typescript", "JavaScript", "Tailwind CSS"],
-    link: "#",
+    link: "https://github.com/hadimalik12/hadimalik-portfolio",
   },
 ];
 
