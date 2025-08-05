@@ -64,7 +64,7 @@ const jobProjects = [
     imagePath: "/hadimalikportfolio.png",
     title: "hadimalik.com",
     description:
-      "My portfolio website (what you are currently viewing). Based on Brittany Chiang's website (they awesome).",
+      "My portfolio website (what you are currently viewing). Based on Brittany Chiang's website.",
     skills: ["Typescript", "JavaScript", "Tailwind CSS"],
     link: "https://github.com/hadimalik12/hadimalik-portfolio",
   },

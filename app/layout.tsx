@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description:
     "Hadi Malik is an aspiring Software Engineer.",
   keywords:
-    "Alexander Meikopoulos, Product Designer, AI, Web3, Finance, User Experience, UI/UX Design, Design Systems, Front-end Development, Decentralized Finance, DeFi, Swoop Exchange, Vela Exchange, Stealth AI Startup, Technology, Innovation, Human-Centered Design",
+    "",
   openGraph: {
     locale: "en_US",
     siteName: "Hadi Malik",
