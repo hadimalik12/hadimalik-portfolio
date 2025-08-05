@@ -24,11 +24,6 @@ export const metadata: Metadata = {
     description:
       "Hadi Malik is an aspiring Software Engineer.",
     url: "https://hadimalik12.github.io/hadimalik-portfolio/",
-    images: [
-      {
-        url: "./og-large-meik-2.jpg",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
