@@ -5,7 +5,7 @@
 @layer base {
   :root {
     /* Base Colors - Black & White Theme */
-    --background: 0 0% 0%; /* Pure Black */
+    --background: rgba(0, 0, 0, 0.6);
     --foreground: 0 0% 98%; /* White */
 
     /* Card */
@@ -52,11 +52,8 @@
   }
 
   body {
-    @apply bg-background text-foreground; /* Use theme variables */
     /* You liked the backdrop blur, so we keep it. */
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     cursor: default;
   }
 }
