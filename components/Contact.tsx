@@ -9,9 +9,6 @@ export default function Contact() {
         </h2>
       </div>
       <div className="flex flex-col gap-2 lg:px-6 mb-8">
-        <h2 className="text-2xl font-semibold text-foreground lg:text-start">
-          Contact
-        </h2>
         <p className="text-muted-foreground text-sm lg:text-base lg:text-start">
           Thank you for your interest in me and/or my work. I am open to any feedback, questions, suggestions, or opportunities you may have. Feel free to reach me at:{" "}
           <span className="text-foreground font-medium">
