@@ -150,12 +150,12 @@ export default function ExpCard() {
           </a>
         ))}
       </>
-      <div className="lg:px-12 mt-12">
+      <div className="lg:pl-6 mt-12">
         <a
           href="https://hadimalik12.github.io/hadimalik-portfolio/Hadi_Malik_Resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center font-medium leading-tight text-muted-foreground group"
+          className="inline-flex items-center font-medium leading-tight text-emerald-400 group"
         >
           <span className="border-b border-transparent pb-px transition hover:border-primary motion-reduce:transition-none">
             View Full Resume
