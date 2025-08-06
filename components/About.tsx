@@ -31,7 +31,7 @@ export default function About() {
         </p>
         <p className="text-start text-muted-foreground lg:px-6">
           Outside of tech, I’d call myself an amateur athlete and a food enthusiast. I love playing pickup games
-          with friends and watching LeBron. I also loving checking out new food spots around town after a nice hoop session.
+          with friends and watching LeBron dominate the NBA. I also loving checking out new food spots around town after a nice hoop session.
         </p>
       </div>
     </section>
