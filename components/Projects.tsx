@@ -12,7 +12,7 @@ import { MoveUpRight } from "lucide-react";
 
 const jobProjects = [
   {
-    imagePath: `${process.env.NODE_ENV === "production" ? "/hadimalik-portfolio" : ""}/vulnscan.png`,
+    imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/vulnscan.png",
     title: "VulnScan",
     description:
       "Developed a command-line vulnerability scanner for scanning local or remote networks. It performs port scanning, banner grabbing, maps detected services to CVEs using the NVD API, supports CPE matching and CVSS filtering, includes interactive host discovery, and exports results as HTML and JSON reports.",
@@ -30,7 +30,7 @@ const jobProjects = [
     link: "https://github.com/hadimalik12/vulnerability-scanner",
   },
   {
-    imagePath: `${process.env.NODE_ENV === "production" ? "/hadimalik-portfolio" : ""}/wandersync.png`,
+    imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/wandersync.png",
     title: "WanderSync",
     description:
       "WanderSync is a travel planning app for organizing solo or group itineraries. Users can manage destinations, dining, accommodations, and travel notes, and collaborate in real time. Built with Firebase for authentication and data storage, the app supports live syncing, vacation tracking, and shared updates across user",
@@ -47,7 +47,7 @@ const jobProjects = [
     link: "https://github.com/Benito-Karkada/CS2340C_Team27",
   },
   {
-    imagePath: `${process.env.NODE_ENV === "production" ? "/hadimalik-portfolio" : ""}/githublogo.png`,
+    imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/githublogo.png",
     title: "QuranID",
     description:
       "QuranID is a tool that identifies Quranic verses from spoken audio. It transcribes a user’s recitation using Google Cloud’s Speech-to-Text API and matches it to the closest verse using Levenshtein distance.",
@@ -61,7 +61,7 @@ const jobProjects = [
     link: "https://github.com/hadimalik12/quranID",
   },
   {
-    imagePath: `${process.env.NODE_ENV === "production" ? "/hadimalik-portfolio" : ""}/hadimalikportfolio.png`,
+    imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/hadimalikportfolio.png",
     title: "hadimalik.com",
     description:
       "My portfolio website (what you are currently viewing). Based on Brittany Chiang's website.",
