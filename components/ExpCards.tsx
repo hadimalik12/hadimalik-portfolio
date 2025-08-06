@@ -152,7 +152,7 @@ export default function ExpCard() {
       </>
       <div className="lg:px-12 mt-12">
         <a
-          href="/Hadi_Malik_Resume.pdf"
+          href="https://hadimalik12.github.io/hadimalik-portfolio/Hadi_Malik_Resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center font-medium leading-tight text-muted-foreground group"
