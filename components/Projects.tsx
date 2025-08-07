@@ -80,47 +80,52 @@ export default function Projects() {
       </div>
       <>
         {jobProjects.map((project, index) => (
-          <a
-            key={index}
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:cursor-pointer"
-          >
-            <Card
-              className="group lg:p-6 mb-4 flex flex-col lg:flex-row w-full min-h-fit gap-0 lg:gap-5 rounded-lg bg-transparent border border-transparent transition-all duration-300 ease-in-out lg:hover:scale-[1.01] lg:hover:backdrop-blur-sm lg:hover:bg-white/5 lg:hover:border-white/10"
+          <div key={index}>
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:cursor-pointer"
             >
-              <CardHeader className="h-full w-full lg:w-1/3 mb-4 p-0">
-                <Image
-                  src={project.imagePath}
-                  alt={`Screenshot of ${project.title}`}
-                  width={1920}
-                  height={1080}
-                  priority
-                  className="bg-[#141414] mt-2 border border-transparent rounded-md"
-                />
-              </CardHeader>
-              <CardContent className="flex flex-col p-0 w-full lg:w-2/3">
-                <p className="text-white font-bold group-hover:text-primary">
-                  {project.title}{" "}
-                  <MoveUpRight className="ml-1 inline-block h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 motion-reduce:transition-none" />
-                </p>
-                <CardDescription className="py-3 text-muted-foreground">
-                  {project.description}
-                </CardDescription>
-                <CardFooter className="p-0 flex flex-wrap gap-2">
-                  {project.skills.map((skill, index) => (
-                    <Badge
-                      key={index}
-                      className="bg-gray-800 text-gray-300 hover:bg-gray-700 border-0"
-                    >
-                      {skill}
-                    </Badge>
-                  ))}
-                </CardFooter>
-              </CardContent>
-            </Card>
-          </a>
+              <Card
+                className="group lg:p-6 mb-4 flex flex-col lg:flex-row w-full min-h-fit gap-0 lg:gap-5 rounded-lg bg-transparent border border-transparent transition-all duration-300 ease-in-out lg:hover:scale-[1.01] lg:hover:backdrop-blur-sm lg:hover:bg-white/5 lg:hover:border-white/10"
+              >
+                <CardHeader className="h-full w-full lg:w-1/3 mb-4 p-0">
+                  <Image
+                    src={project.imagePath}
+                    alt={`Screenshot of ${project.title}`}
+                    width={1920}
+                    height={1080}
+                    priority
+                    className="bg-[#141414] mt-2 border border-transparent rounded-md"
+                  />
+                </CardHeader>
+                <CardContent className="flex flex-col p-0 w-full lg:w-2/3">
+                  <p className="text-white font-bold group-hover:text-primary">
+                    {project.title}
+                    <MoveUpRight className="ml-1 inline-block h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 motion-reduce:transition-none" />
+                  </p>
+                  <CardDescription className="py-3 text-muted-foreground">
+                    {project.description}
+                  </CardDescription>
+                  <CardFooter className="p-0 flex flex-wrap gap-2">
+                    {project.skills.map((skill, idx) => (
+                      <Badge
+                        key={idx}
+                        className="bg-gray-800 text-gray-300 hover:bg-gray-700 border-0"
+                      >
+                        {skill}
+                      </Badge>
+                    ))}
+                  </CardFooter>
+                </CardContent>
+              </Card>
+            </a>
+
+            {index < jobProjects.length - 1 && (
+              <div className="my-4 h-px w-full bg-white/10" />
+            )}
+          </div>
         ))}
       </>
     </section>

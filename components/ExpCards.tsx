@@ -105,49 +105,56 @@ export default function ExpCard() {
       </div>
       <>
         {jobPositions.map((job, index) => (
-          <a
-            key={index}
-            href={job.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:cursor-pointer"
-          >
-            <Card
-              className="group lg:p-6 mb-4 flex flex-col lg:flex-row w-full min-h-fit gap-0 lg:gap-5 rounded-lg bg-transparent border border-transparent transition-all duration-300 ease-in-out lg:hover:scale-[1.01] lg:hover:backdrop-blur-sm lg:hover:bg-white/5 lg:hover:border-white/10"
+          <div key={index}>
+            <a
+              href={job.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:cursor-pointer"
             >
-              {/* FIX: Gave the CardHeader a fixed width on large screens and told it not to shrink. */}
-              <CardHeader className="h-full lg:w-40 shrink-0 p-0">
-                <CardTitle className="text-base text-muted-foreground whitespace-nowrap">
-                  {job.timeline}
-                </CardTitle>
-              </CardHeader>
-              {/* FIX: Ensured the CardContent takes up the remaining available width. */}
-              <CardContent className="flex flex-col p-0 w-full">
-                <p className="text-white group-hover:text-primary">
-                  {job.currentPosition} • {job.place}
-                  <MoveUpRight className="ml-1 inline-block h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 motion-reduce:transition-none" />
-                </p>
-                {job.previousPositions.map((position, index) => (
-                  <p key={index} className="text-muted-foreground text-sm">
-                    {position}
+              <Card
+                className="group lg:p-6 mb-4 flex flex-col lg:flex-row w-full min-h-fit gap-0 lg:gap-5 rounded-lg bg-transparent border border-transparent transition-all duration-300 ease-in-out lg:hover:scale-[1.01] lg:hover:backdrop-blur-sm lg:hover:bg-white/5 lg:hover:border-white/10"
+              >
+                <CardHeader className="h-full lg:w-40 shrink-0 p-0">
+                  <CardTitle className="text-base text-muted-foreground whitespace-nowrap">
+                    {job.timeline}
+                  </CardTitle>
+                </CardHeader>
+
+                <CardContent className="flex flex-col p-0 w-full">
+                  <p className="text-white group-hover:text-primary">
+                    {job.currentPosition} • {job.place}
+                    <MoveUpRight className="ml-1 inline-block h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 motion-reduce:transition-none" />
                   </p>
-                ))}
-                <CardDescription className="py-3 text-muted-foreground">
-                  {job.description}
-                </CardDescription>
-                <CardFooter className="p-0 flex flex-wrap gap-2">
-                  {job.skills.map((skill, index) => (
-                    <Badge
-                      key={index}
-                      className="bg-gray-800 text-gray-300 hover:bg-gray-700 border-0"
-                    >
-                      {skill}
-                    </Badge>
+
+                  {job.previousPositions.map((position, idx) => (
+                    <p key={idx} className="text-muted-foreground text-sm">
+                      {position}
+                    </p>
                   ))}
-                </CardFooter>
-              </CardContent>
-            </Card>
-          </a>
+
+                  <CardDescription className="py-3 text-muted-foreground">
+                    {job.description}
+                  </CardDescription>
+
+                  <CardFooter className="p-0 flex flex-wrap gap-2">
+                    {job.skills.map((skill, idx) => (
+                      <Badge
+                        key={idx}
+                        className="bg-gray-800 text-gray-300 hover:bg-gray-700 border-0"
+                      >
+                        {skill}
+                      </Badge>
+                    ))}
+                  </CardFooter>
+                </CardContent>
+              </Card>
+            </a>
+
+            {index < jobPositions.length - 1 && (
+              <div className="my-4 h-px w-full bg-white/10" />
+            )}
+          </div>
         ))}
       </>
       <div className="lg:pl-6 mt-12">
