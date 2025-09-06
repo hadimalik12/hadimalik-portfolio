@@ -12,6 +12,17 @@ import { MoveRight, MoveUpRight } from "lucide-react";
 
 const jobPositions = [
   {
+    timeline: "Aug. 2025 - Present",
+    currentPosition: "Research Assistant",
+    place: "Georgia Tech School of Cybersecurity and Privacy",
+    previousPositions: [""],
+    description:
+      "Researching under Professor Vassilis on whether large language models update their knowledge base from user queries during inference, in order to assess potential risks of data leakage.",
+    skills: [
+    ],
+    link: "https://faculty.cc.gatech.edu/~vzikas/",
+  },
+  {
     timeline: "May 2025 — Jul 2025",
     currentPosition: "Software Engineer Intern",
     place: "In Good Company Works",
