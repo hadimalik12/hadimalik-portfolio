@@ -17,7 +17,7 @@ const jobPositions = [
     place: "Georgia Tech School of Cybersecurity and Privacy",
     previousPositions: [""],
     description:
-      "Researching under Professor Vassilis on whether large language models update their knowledge base from user queries during inference, in order to assess potential risks of data leakage.",
+      "Researching under Professor Vassilis to determine whether large language models update their knowledge base from user queries during inference, which poses the risk of potential data leakage.",
     skills: [
     ],
     link: "https://faculty.cc.gatech.edu/~vzikas/",
