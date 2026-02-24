@@ -12,6 +12,17 @@ import { MoveRight, MoveUpRight } from "lucide-react";
 
 const jobPositions = [
   {
+    timeline: "Feb. 2026 - Present",
+    currentPosition: "Incoming Software Engineer Intern",
+    place: "Genuine Parts Company",
+    previousPositions: [""],
+    description:
+      "",
+    skills: [
+    ],
+    link: "https://www.genpt.com/",
+  },
+  {
     timeline: "Aug. 2025 - Present",
     currentPosition: "Research Assistant",
     place: "Georgia Tech School of Cybersecurity and Privacy",
