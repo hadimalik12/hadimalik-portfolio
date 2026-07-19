@@ -12,15 +12,15 @@ import { MoveRight, MoveUpRight } from "lucide-react";
 
 const jobPositions = [
   {
-    timeline: "Feb. 2026 - Present",
-    currentPosition: "Incoming Software Engineer Intern",
-    place: "Genuine Parts Company",
+    timeline: "May. 2026 - Present",
+    currentPosition: "Software Development Engineer Intern",
+    place: "Amazon",
     previousPositions: [""],
     description:
       "",
     skills: [
     ],
-    link: "https://www.genpt.com/",
+    link: "https://www.amazon.com/alexa-smart-home/b?ie=UTF8&node=21442899011",
   },
   {
     timeline: "Aug. 2025 - Present",
