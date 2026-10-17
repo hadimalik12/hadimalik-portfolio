@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
   title: "Hadi Malik",
   description:
-    "Hadi Malik is an aspiring Software Engineer.",
+    "Hadi Malik is a software engineer and Georgia Tech computer science student working across cloud infrastructure, machine learning, and security.",
   keywords:
     "",
   openGraph: {
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     type: "website",
     title: "Hadi Malik",
     description:
-      "Hadi Malik is an aspiring Software Engineer.",
+      "Hadi Malik is a software engineer and Georgia Tech computer science student working across cloud infrastructure, machine learning, and security.",
     url: "https://hadimalik12.github.io/hadimalik-portfolio/",
     images: [
       {

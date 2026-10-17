@@ -12,7 +12,7 @@ export default function Contact() {
         <p className="text-muted-foreground text-sm lg:text-base lg:text-start">
           Thank you for your interest in me and/or my work. I am open to any feedback, questions, suggestions, or opportunities you may have. Feel free to reach me at:{" "}
           <span className="text-foreground font-medium">
-            hmalik39 [at] gatech [dot] edu
+            hadia7549 [at] gmail [dot] com
           </span>
         </p>
       </div>

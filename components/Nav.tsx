@@ -56,12 +56,11 @@ export default function Nav() {
         <h1 className="text-[42px] font-bold lg:text-start">
           Hi, i&#39;m Hadi 👋
         </h1>
-        <h2 className="text-xl lg:text-start">Aspiring Software Engineer.</h2>
+        <h2 className="text-xl lg:text-start">Software Engineer</h2>
         <p className="text-lg lg:text-start text-muted-foreground">
-          I’m a B.S. Computer Science student at Georgia Tech, specializing in
-          Intelligence and Cyber Security. I have hands-on experience in AI
-          solutions, web development, data analysis, iOS development, and network
-          security.
+          I’m a Computer Science student at Georgia Tech, completing my B.S. in
+          December 2026 and M.S. in May 2028. I build software across cloud
+          infrastructure, machine learning, and security.
         </p>
       </div>
       <nav className="lg:flex hidden">
