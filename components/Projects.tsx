@@ -75,14 +75,14 @@ function ProjectCard({ project }: { project: Project }) {
         </CardHeader>
       )}
       <CardContent className={`flex flex-col p-0 w-full ${project.imagePath ? "lg:w-2/3" : ""}`}>
-        <p className="text-foreground font-bold group-hover:text-primary">
+        <p className="text-foreground font-bold group-hover:text-primary transition-colors duration-300">
           {project.title}
           {project.link && <MoveUpRight className="ml-1 inline-block h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 motion-reduce:transition-none" />}
         </p>
         <CardDescription className="py-3 text-muted-foreground">{project.description}</CardDescription>
         <CardFooter className="p-0 flex flex-wrap gap-2">
           {project.skills.map((skill) => (
-            <Badge key={skill} className="bg-gray-800 text-gray-300 hover:bg-gray-700 border-0">{skill}</Badge>
+            <Badge key={skill} className="bg-neutral-800 text-neutral-300 hover:bg-neutral-700 border-0">{skill}</Badge>
           ))}
         </CardFooter>
       </CardContent>
