@@ -145,7 +145,3 @@ a:focus-visible .glass-card::before {
     transform: none;
   }
 }
-
-.pixel-art {
-  image-rendering: pixelated;
-}
