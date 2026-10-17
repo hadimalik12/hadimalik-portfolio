@@ -11,7 +11,7 @@ export default function About() {
           I’m studying Computer Science at Georgia Tech, where I’ll complete my B.S. in December 2026 and my M.S. in May 2028. I’m drawn to the intersection of software engineering, machine learning, and security: building systems that work well at scale and earn people’s trust.
         </p>
         <p className="text-start text-muted-foreground lg:px-6">
-          At <span className="text-white font-medium">Amazon</span>, I built debugging and analytics tools for Alexa Smart Home teams. I also research model provenance and training-data signals with Georgia Tech’s School of Cybersecurity and Privacy. Earlier, I built AI products at <span className="text-white font-medium">In Good Company Works</span> and <span className="text-white font-medium">Verifacto</span>.
+          At <span className="text-foreground font-medium">Amazon</span>, I built debugging and analytics tools for Alexa Smart Home teams. I also research model provenance and training-data signals with Georgia Tech’s School of Cybersecurity and Privacy. Earlier, I built AI products at <span className="text-foreground font-medium">In Good Company Works</span> and <span className="text-foreground font-medium">Verifacto</span>.
         </p>
         <p className="text-start text-muted-foreground lg:px-6">
           Outside of tech, I enjoy pickup basketball and discovering new food spots around town.

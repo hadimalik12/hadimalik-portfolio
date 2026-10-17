@@ -4,56 +4,54 @@
 
 @layer base {
   :root {
-    /* Base Colors - Black & White Theme */
-    --background: rgba(0, 0, 0, 0.6);
-    --foreground: 0 0% 98%; /* White */
+    color-scheme: dark;
+    --background: 220 20% 3%;
+    --foreground: 210 20% 96%;
 
     /* Card */
-    --card: 0 0% 7%; /* Dark Gray for visible cards */
-    --card-foreground: 0 0% 98%; /* White */
+    --card: 220 16% 7%;
+    --card-foreground: 210 20% 96%;
 
     /* Popover */
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 220 16% 7%;
+    --popover-foreground: 210 20% 96%;
 
     /* Primary (for interactive elements) */
-    --primary: 0 0% 98%; /* White */
-    --primary-foreground: 0 0% 9%; /* Black */
+    --primary: 165 55% 75%;
+    --primary-foreground: 220 20% 3%;
 
     /* Secondary */
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 220 12% 13%;
+    --secondary-foreground: 210 20% 96%;
 
     /* Muted */
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 63%;
+    --muted: 220 12% 13%;
+    --muted-foreground: 210 12% 75%;
 
     /* Accent */
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 220 12% 13%;
+    --accent-foreground: 210 20% 96%;
 
     /* Destructive */
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
 
     /* Border & Ring */
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 0 0% 30%; /* Dark gray ring for focus */
+    --border: 220 12% 19%;
+    --input: 220 12% 19%;
+    --ring: 165 55% 75%;
 
     /* Radius */
-    --radius: 0.5rem; /* This will bring back rounded corners */
+    --radius: 0.5rem;
   }
-
-  /* We removed the .dark class because you are only using one theme. */
 
   * {
     @apply border-border;
   }
 
   body {
-    /* You liked the backdrop blur, so we keep it. */
-    background: rgba(0, 0, 0, 0.6);
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     cursor: default;
   }
 }
@@ -81,4 +79,69 @@
   width: 4rem;
   height: 2px;
   background-color: hsl(var(--foreground));
+}
+
+.glass-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: background-color 250ms ease, border-color 250ms ease,
+    box-shadow 250ms ease, transform 250ms ease;
+}
+
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(202, 255, 242, 0.12), transparent 48%),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 45%, rgba(255, 255, 255, 0.025));
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+.glass-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (hover: hover) {
+  .glass-card:hover {
+    transform: translateY(-2px);
+    background-color: rgba(255, 255, 255, 0.045);
+    border-color: rgba(209, 248, 237, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 14px 36px rgba(0, 0, 0, 0.38);
+    backdrop-filter: blur(18px) saturate(1.2);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  }
+
+  .glass-card:hover::before {
+    opacity: 1;
+  }
+}
+
+a:focus-visible .glass-card {
+  background-color: rgba(255, 255, 255, 0.045);
+  border-color: rgba(209, 248, 237, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 0 2px hsl(var(--ring));
+}
+
+a:focus-visible .glass-card::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-card,
+  .glass-card::before {
+    transition: none;
+  }
+
+  .glass-card:hover {
+    transform: none;
+  }
 }

@@ -62,7 +62,7 @@ const jobProjects: Project[] = [
 
 function ProjectCard({ project }: { project: Project }) {
   return (
-    <Card className="group lg:p-6 mb-4 flex flex-col lg:flex-row w-full min-h-fit gap-0 lg:gap-5 rounded-lg bg-transparent border border-transparent transition-all duration-300 ease-in-out lg:hover:scale-[1.01] lg:hover:backdrop-blur-sm lg:hover:bg-white/5 lg:hover:border-white/10">
+    <Card className="glass-card group lg:p-6 mb-4 flex flex-col lg:flex-row w-full min-h-fit gap-0 lg:gap-5 rounded-lg bg-transparent border border-transparent shadow-none">
       {project.imagePath && (
         <CardHeader className="h-full w-full lg:w-1/3 mb-4 p-0">
           <Image
@@ -75,7 +75,7 @@ function ProjectCard({ project }: { project: Project }) {
         </CardHeader>
       )}
       <CardContent className={`flex flex-col p-0 w-full ${project.imagePath ? "lg:w-2/3" : ""}`}>
-        <p className="text-white font-bold group-hover:text-primary">
+        <p className="text-foreground font-bold group-hover:text-primary">
           {project.title}
           {project.link && <MoveUpRight className="ml-1 inline-block h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 motion-reduce:transition-none" />}
         </p>
@@ -109,7 +109,7 @@ export default function Projects() {
         </div>
       ))}
       <div className="lg:pl-6 mt-12">
-        <a href="https://hadimalik12.github.io/hadimalik-portfolio/Hadi_Malik_Resume.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center font-medium leading-tight text-emerald-400 group">
+        <a href="https://hadimalik12.github.io/hadimalik-portfolio/Hadi_Malik_Resume.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center font-medium leading-tight text-primary group">
           <span className="border-b border-transparent pb-px transition hover:border-primary motion-reduce:transition-none">View Full Resume</span>
           <MoveRight className="ml-1 inline-block h-5 w-5 shrink-0 -translate-y-px transition-transform group-hover:translate-x-2 group-focus-visible:translate-x-2 motion-reduce:transition-none" />
         </a>
