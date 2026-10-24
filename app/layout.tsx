@@ -7,32 +7,27 @@ import { Analytics } from "@vercel/analytics/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://hadimalik12.github.io/hadimalik-portfolio/"),
+  metadataBase: new URL("https://hadimalik.com/"),
   alternates: {
-    canonical: "https://hadimalik12.github.io/hadimalik-portfolio/",
+    canonical: "https://hadimalik.com/",
   },
-  title: "Hadi Malik",
+  title: "Hadi Malik · Index",
   description:
-    "Hadi Malik is a software engineer and Georgia Tech computer science student working across cloud infrastructure, machine learning, and security.",
+    "Studying computer science at Georgia Tech with a concentration in intelligence and cybersecurity. Interested in software engineering, machine learning engineering, and security engineering.",
   keywords:
     "",
   openGraph: {
     locale: "en_US",
     siteName: "Hadi Malik",
     type: "website",
-    title: "Hadi Malik",
+    title: "Hadi Malik · Index",
     description:
-      "Hadi Malik is a software engineer and Georgia Tech computer science student working across cloud infrastructure, machine learning, and security.",
-    url: "https://hadimalik12.github.io/hadimalik-portfolio/",
-    images: [
-      {
-        url: "https://hadimalik12.github.io/hadimalik-portfolio/avatar.png",
-      },
-    ],
+      "Studying computer science at Georgia Tech with a concentration in intelligence and cybersecurity. Interested in software engineering, machine learning engineering, and security engineering.",
+    url: "https://hadimalik.com/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hadi Malik",
+    title: "Hadi Malik · Index",
   },
 };
 
