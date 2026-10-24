@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import { jobPositions, jobProjects } from "@/lib/portfolio";
 
 type Section = "education" | "experience" | "projects" | "contact";
@@ -35,16 +36,48 @@ function cipherAt(seed: number, position: number, tick: number) {
   return cipher[((value ^ (value >>> 16)) >>> 0) % cipher.length];
 }
 
-function DecodeText({ text }: { text: string }) {
+function DecodeText({ text, byLine = false }: { text: string; byLine?: boolean }) {
   const register = useContext(CompletionContext);
   const registerRef = useRef(register);
   registerRef.current = register;
   const [motion, setMotion] = useState({ progress: 0, elapsed: 0 });
+  const textRef = useRef<HTMLSpanElement>(null);
+  const [lineOffsets, setLineOffsets] = useState<Record<number, number>>({});
   const seed = useMemo(() => {
     let hash = 2166136261;
     for (const character of text) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
     return hash >>> 0;
   }, [text]);
+
+  useEffect(() => {
+    if (!byLine || !textRef.current) return;
+    const element = textRef.current;
+    let cancelled = false;
+    const measureLines = () => {
+      if (cancelled) return;
+      const characters = Array.from(element.querySelectorAll<HTMLElement>('[data-character-index]'));
+      if (!characters.length) return;
+      const lines: { top: number; characters: { index: number; left: number }[] }[] = [];
+      for (const character of characters) {
+        const rect = character.getBoundingClientRect();
+        let line = lines.find(candidate => Math.abs(candidate.top - rect.top) < 2);
+        if (!line) { line = { top: rect.top, characters: [] }; lines.push(line); }
+        line.characters.push({ index: Number(character.dataset.characterIndex), left: rect.left });
+      }
+      const offsets: Record<number, number> = {};
+      for (const line of lines) {
+        const left = Math.min(...line.characters.map(character => character.left));
+        const right = Math.max(...line.characters.map(character => character.left));
+        for (const character of line.characters) offsets[character.index] = (character.left - left) / Math.max(1, right - left);
+      }
+      setLineOffsets(offsets);
+    };
+    measureLines();
+    const observer = new ResizeObserver(measureLines);
+    observer.observe(element.parentElement ?? element);
+    document.fonts.ready.then(measureLines);
+    return () => { cancelled = true; observer.disconnect(); };
+  }, [text, byLine]);
 
   useEffect(() => {
     const registration = registerRef.current?.();
@@ -55,7 +88,7 @@ function DecodeText({ text }: { text: string }) {
     }
     let frame = 0;
     const start = performance.now();
-    const duration = Math.min(2200, Math.max(1500, text.length * 18));
+    const duration = byLine ? 1800 : Math.min(2200, Math.max(1500, text.length * 18));
     const render = (now: number) => {
       const elapsed = now - start;
       const progress = Math.min(1, elapsed / duration);
@@ -66,23 +99,24 @@ function DecodeText({ text }: { text: string }) {
     setMotion({ progress: 0, elapsed: 0 });
     frame = requestAnimationFrame(render);
     return () => { cancelAnimationFrame(frame); registration?.cancel(); };
-  }, [text]);
+  }, [text, byLine]);
 
-  // A soft sweep crossfades each glyph into its final letter. Words keep their
-  // natural wrapping, and the settled text sheds the temporary animation spans.
+  // For paragraphs and bullets, each measured visual line gets the same sweep,
+  // including after a resize. Settled text sheds the temporary animation spans.
   const sweep = motion.progress * motion.progress * (3 - 2 * motion.progress);
   let offset = 0;
-  return <><span className="signal-decode" data-decoding={motion.progress < 1} aria-hidden="true">{motion.progress === 1 ? text : text.split(/(\s+)/).map((word, wordIndex) => {
+  return <><span ref={textRef} className="signal-decode" data-decoding={motion.progress < 1} aria-hidden="true">{motion.progress === 1 ? text : text.split(/(\s+)/).map((word, wordIndex) => {
     const wordStart = offset;
     offset += word.length;
     if (/^\s+$/.test(word)) return word;
     return <span className="signal-decode-word" key={wordIndex}>{Array.from(word, (character, index) => {
       const position = wordStart + index;
-      const phase = Math.min(1, Math.max(0, (sweep - position / text.length * .78) / .22));
+      const offset = byLine ? (lineOffsets[position] ?? 0) : position / text.length;
+      const phase = Math.min(1, Math.max(0, (sweep - offset * .78) / .22));
       const opacity = phase * phase * (3 - 2 * phase);
       const punctuation = ".,·:/()–—".includes(character);
       const tick = phase > 0 && phase < 1 ? Math.floor((motion.elapsed + position * 19) / 140) : 0;
-      return <span className="signal-decode-character" key={index}>
+      return <span className="signal-decode-character" data-character-index={position} key={index}>
         <span className="signal-decode-cipher" style={{ opacity: punctuation ? 0 : (1 - opacity) * .55 }}>{cipherAt(seed, position, tick)}</span>
         <span className="signal-decode-letter" style={{ opacity: punctuation ? 1 : opacity }}>{character}</span>
       </span>;
@@ -188,9 +222,7 @@ export default function SignalPortfolio() {
         </div>,
         <div className="signal-intro" key="intro">
           <p className="signal-description">
-            <span className="signal-intro-line"><DecodeText text="Studying computer science at Georgia Tech with a concentration in" /></span>
-            <span className="signal-intro-line"><DecodeText text="intelligence and cybersecurity. Interested in opportunities in software" /></span>
-            <span className="signal-intro-line"><DecodeText text="engineering, machine learning engineering, and security engineering." /></span>
+            <DecodeText text="Studying computer science at Georgia Tech with a concentration in intelligence and cybersecurity. Interested in opportunities in software engineering, machine learning engineering, and security engineering." byLine />
           </p>
         </div>,
         <div className="signal-index" aria-label="Portfolio sections" key="sections">
@@ -213,7 +245,7 @@ export default function SignalPortfolio() {
                   <DetailRow title={job.place === "Georgia Tech School of Cybersecurity and Privacy" ? "Georgia Tech" : job.place} subtitle={job.currentPosition} meta={job.timeline} open={expandedJobs.has(index)} onClick={() => toggleJob(index)} id={"signal-job-" + index} index={index} />
                   {openedJobs.has(index) && <div className="signal-detail-content" id={"signal-job-" + index} hidden={!expandedJobs.has(index)}>
                     <DecodeTogether>
-                      <ul className="signal-bullets">{job.bullets.map(bullet => <li key={bullet}><DecodeText text={bullet} /></li>)}</ul>
+                      <ul className="signal-bullets">{job.bullets.map(bullet => <li key={bullet}><DecodeText text={bullet} byLine /></li>)}</ul>
                       <Skills skills={job.skills} />
                     </DecodeTogether>
                   </div>}
@@ -232,7 +264,7 @@ export default function SignalPortfolio() {
                     <DetailRow title={project.title} open={expandedProjects.has(index)} onClick={() => toggleProject(index)} id={"signal-project-" + index} index={index} />
                     {openedProjects.has(index) && <div className="signal-detail-content" id={"signal-project-" + index} hidden={!expandedProjects.has(index)}>
                       <DecodeTogether>
-                        <ul className="signal-bullets">{project.bullets.map(bullet => <li key={bullet}><DecodeText text={bullet} /></li>)}</ul>
+                        <ul className="signal-bullets">{project.bullets.map(bullet => <li key={bullet}><DecodeText text={bullet} byLine /></li>)}</ul>
                         <Skills skills={project.skills} />
                         {project.link && <a className="signal-project-link" href={project.link} target="_blank" rel="noopener noreferrer"><DecodeText text="View project" /> <ArrowUpRight size={14} aria-hidden="true" /></a>}
                       </DecodeTogether>
@@ -253,7 +285,7 @@ export default function SignalPortfolio() {
         <div className="signal-links" key="links">
           <a href="https://github.com/hadimalik12" target="_blank" rel="noopener noreferrer"><DecodeText text="GitHub" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
           <a href="https://www.linkedin.com/in/hadimalik12/" target="_blank" rel="noopener noreferrer"><DecodeText text="LinkedIn" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
-          <a className="signal-resume" href="/Hadi_Malik_Resume.pdf" target="_blank" rel="noopener noreferrer"><DecodeText text="Full résumé" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
+          <Link className="signal-resume" href="/Hadi_Malik_Resume.pdf" prefetch={false} target="_blank" rel="noopener noreferrer"><DecodeText text="Full résumé" /> <ArrowUpRight size={13} aria-hidden="true" /></Link>
         </div>,
       ]} />
     </main>
