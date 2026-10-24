@@ -8,25 +8,44 @@ type Section = "education" | "experience" | "projects" | "contact";
 
 type DecodeRegistration = { complete: () => void; cancel: () => void };
 const CompletionContext = createContext<(() => DecodeRegistration) | null>(null);
-const SequenceContext = createContext({ step: 0, finish: (_step: number) => {} });
 
-function Sequence({ children }: { children: ReactNode }) {
-  const [step, setStep] = useState(0);
-  const finish = useCallback((finished: number) => {
-    setStep(current => current === finished ? current + 1 : current);
-  }, []);
-  const value = useMemo(() => ({ step, finish }), [step, finish]);
-  return <SequenceContext.Provider value={value}><CompletionContext.Provider value={null}>{children}</CompletionContext.Provider></SequenceContext.Provider>;
+function Sequence({ stages }: { stages: ReactNode[] }) {
+  const [active, setActive] = useState(0);
+  const advance = useCallback(() => setActive(current => current + 1), []);
+  const ignore = useCallback(() => {}, []);
+  return <>{stages.slice(0, active).map((stage, index) => <DecodeGroup key={index} onComplete={ignore}>{stage}</DecodeGroup>)}
+    {active < stages.length && <DecodeGroup key={active} onComplete={advance}>{stages[active]}</DecodeGroup>}
+  </>;
 }
 
-const cipher = "01<>/{}[]#_+-";
+function DecodeTogether({ children }: { children: ReactNode }) {
+  // An expanded panel forms a separate simultaneous batch, independent of the
+  // page's initial sequence and of other panels the visitor may open.
+  return <CompletionContext.Provider value={null}>{children}</CompletionContext.Provider>;
+}
+
+const cipher = "0123456789-_+*/{}[]<>~^=:;#@%&";
+
+function cipherAt(seed: number, position: number, tick: number) {
+  let value = seed ^ Math.imul(position + 1, 0x45d9f3b) ^ Math.imul(tick + 1, 0x119de1f3);
+  value = Math.imul(value ^ (value >>> 16), 0x45d9f3b);
+  value = Math.imul(value ^ (value >>> 16), 0x45d9f3b);
+  return cipher[((value ^ (value >>> 16)) >>> 0) % cipher.length];
+}
 
 function DecodeText({ text }: { text: string }) {
   const register = useContext(CompletionContext);
+  const registerRef = useRef(register);
+  registerRef.current = register;
   const [motion, setMotion] = useState({ progress: 0, elapsed: 0 });
+  const seed = useMemo(() => {
+    let hash = 2166136261;
+    for (const character of text) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
+    return hash >>> 0;
+  }, [text]);
 
   useEffect(() => {
-    const registration = register?.();
+    const registration = registerRef.current?.();
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setMotion({ progress: 1, elapsed: 0 });
       registration?.complete();
@@ -45,7 +64,7 @@ function DecodeText({ text }: { text: string }) {
     setMotion({ progress: 0, elapsed: 0 });
     frame = requestAnimationFrame(render);
     return () => { cancelAnimationFrame(frame); registration?.cancel(); };
-  }, [text, register]);
+  }, [text]);
 
   // A soft sweep crossfades each glyph into its final letter. Words keep their
   // natural wrapping, and the settled text sheds the temporary animation spans.
@@ -62,19 +81,14 @@ function DecodeText({ text }: { text: string }) {
       const punctuation = ".,·:/()–—".includes(character);
       const tick = phase > 0 && phase < 1 ? Math.floor((motion.elapsed + position * 19) / 140) : 0;
       return <span className="signal-decode-character" key={index}>
-        <span className="signal-decode-cipher" style={{ opacity: punctuation ? 0 : (1 - opacity) * .55 }}>{cipher[(position * 7 + tick * 3) % cipher.length]}</span>
+        <span className="signal-decode-cipher" style={{ opacity: punctuation ? 0 : (1 - opacity) * .55 }}>{cipherAt(seed, position, tick)}</span>
         <span className="signal-decode-letter" style={{ opacity: punctuation ? 1 : opacity }}>{character}</span>
       </span>;
     })}</span>;
   })}</span><span className="signal-sr-only">{text}</span></>;
 }
 
-function Reveal({ step, children }: { step: number; children: ReactNode }) {
-  const sequence = useContext(SequenceContext);
-  return sequence.step >= step ? <DecodeGroup step={step} finish={sequence.finish}>{children}</DecodeGroup> : null;
-}
-
-function DecodeGroup({ step, finish, children }: { step: number; finish: (step: number) => void; children: ReactNode }) {
+function DecodeGroup({ onComplete, children }: { onComplete: () => void; children: ReactNode }) {
   const pending = useRef(new Set<symbol>());
   const completed = useRef(false);
   const mounted = useRef(false);
@@ -89,18 +103,16 @@ function DecodeGroup({ step, finish, children }: { step: number; finish: (step: 
     return {
       complete: () => {
         pending.current.delete(token);
-        // Wait for every text fragment in this row to settle before mounting
-        // the next row. Nested sequences own their own completion boundary.
         queueMicrotask(() => {
           if (mounted.current && !completed.current && pending.current.size === 0) {
             completed.current = true;
-            finish(step);
+            onComplete();
           }
         });
       },
       cancel: () => { pending.current.delete(token); },
     };
-  }, [finish, step]);
+  }, [onComplete]);
 
   return <CompletionContext.Provider value={register}>{children}</CompletionContext.Provider>;
 }
@@ -167,63 +179,81 @@ export default function SignalPortfolio() {
 
   return <div className="signal" id="top">
     <a className="signal-skip" href="#signal-main">Skip to content</a>
-    <main id="signal-main" className="signal-main"><Sequence>
-      <div className="signal-intro">
-        <Reveal step={0}><h1><DecodeText text="Hadi Malik" /><span className="signal-cursor" aria-hidden="true">_</span></h1></Reveal>
-        <Reveal step={1}><p className="signal-description"><DecodeText text="Studying computer science at Georgia Tech with a concentration in intelligence and cybersecurity. Interested in opportunities in software engineering, machine learning engineering, and security engineering." /></p></Reveal>
-      </div>
+    <main id="signal-main" className="signal-main">
+      <Sequence stages={[
+        <div className="signal-intro" key="name">
+          <h1><DecodeText text="Hadi Malik" /><span className="signal-cursor" aria-hidden="true">_</span></h1>
+        </div>,
+        <div className="signal-intro" key="intro">
+          <p className="signal-description">
+            <span className="signal-intro-line"><DecodeText text="Studying computer science at Georgia Tech with a concentration in" /></span>
+            <span className="signal-intro-line"><DecodeText text="intelligence and cybersecurity. Interested in opportunities in software" /></span>
+            <span className="signal-intro-line"><DecodeText text="engineering, machine learning engineering, and security engineering." /></span>
+          </p>
+        </div>,
+        <div className="signal-index" aria-label="Portfolio sections" key="sections">
+          <div className="signal-section">
+            <SectionRow number="01" title="Education" meta="Georgia Tech" open={expandedSections.has("education")} onClick={() => toggleSection("education")} />
+            {openedSections.has("education") && <div className="signal-panel" id="signal-panel-education" hidden={!expandedSections.has("education")}>
+              <DecodeTogether>
+                <p className="signal-panel-label"><DecodeText text="GEORGIA INSTITUTE OF TECHNOLOGY" /></p>
+                <div className="signal-degree"><span><DecodeText text="B.S. Computer Science" /></span><span><DecodeText text="Expected December 2026" /></span></div>
+                <div className="signal-degree"><span><DecodeText text="M.S. Computer Science" /></span><span><DecodeText text="Expected May 2028" /></span></div>
+              </DecodeTogether>
+            </div>}
+          </div>
 
-      <div className="signal-index" aria-label="Portfolio sections">
-        <Reveal step={2}><div className="signal-section">
-          <SectionRow number="01" title="Education" meta="Georgia Tech" open={expandedSections.has("education")} onClick={() => toggleSection("education")} />
-          {openedSections.has("education") && <div className="signal-panel" id="signal-panel-education" hidden={!expandedSections.has("education")}><Sequence>
-            <Reveal step={0}><p className="signal-panel-label"><DecodeText text="GEORGIA INSTITUTE OF TECHNOLOGY" /></p></Reveal>
-            <Reveal step={1}><div className="signal-degree"><span><DecodeText text="B.S. Computer Science" /></span><span><DecodeText text="Expected December 2026" /></span></div></Reveal>
-            <Reveal step={2}><div className="signal-degree"><span><DecodeText text="M.S. Computer Science" /></span><span><DecodeText text="Expected May 2028" /></span></div></Reveal>
-          </Sequence></div>}
-        </div></Reveal>
+          <div className="signal-section">
+            <SectionRow number="02" title="Experience" meta="4 roles" open={expandedSections.has("experience")} onClick={() => toggleSection("experience")} />
+            {openedSections.has("experience") && <div className="signal-panel" id="signal-panel-experience" hidden={!expandedSections.has("experience")}>
+              <DecodeTogether>
+                {jobPositions.map((job, index) => <div className="signal-detail-item" key={job.place + index}>
+                  <DetailRow title={job.place === "Georgia Tech School of Cybersecurity and Privacy" ? "Georgia Tech" : job.place} subtitle={job.currentPosition} meta={job.timeline} open={expandedJobs.has(index)} onClick={() => toggleJob(index)} id={"signal-job-" + index} index={index} />
+                  {openedJobs.has(index) && <div className="signal-detail-content" id={"signal-job-" + index} hidden={!expandedJobs.has(index)}>
+                    <DecodeTogether>
+                      <ul className="signal-bullets">{job.bullets.map(bullet => <li key={bullet}><DecodeText text={bullet} /></li>)}</ul>
+                      <Skills skills={job.skills} />
+                    </DecodeTogether>
+                  </div>}
+                </div>)}
+              </DecodeTogether>
+            </div>}
+          </div>
 
-        <Reveal step={3}><div className="signal-section">
-          <SectionRow number="02" title="Experience" meta="4 roles" open={expandedSections.has("experience")} onClick={() => toggleSection("experience")} />
-          {openedSections.has("experience") && <div className="signal-panel" id="signal-panel-experience" hidden={!expandedSections.has("experience")}><Sequence>
-            {jobPositions.map((job, index) => <Reveal step={index} key={job.place + index}><div className="signal-detail-item">
-              <DetailRow title={job.place === "Georgia Tech School of Cybersecurity and Privacy" ? "Georgia Tech" : job.place} subtitle={job.currentPosition} meta={job.timeline} open={expandedJobs.has(index)} onClick={() => toggleJob(index)} id={"signal-job-" + index} index={index} />
-              {openedJobs.has(index) && <div className="signal-detail-content" id={"signal-job-" + index} hidden={!expandedJobs.has(index)}><Sequence>
-                <ul className="signal-bullets">{job.bullets.map((bullet, bulletIndex) => <Reveal step={bulletIndex} key={bullet}><li><DecodeText text={bullet} /></li></Reveal>)}</ul>
-                <Reveal step={job.bullets.length}><Skills skills={job.skills} /></Reveal>
-              </Sequence></div>}
-            </div></Reveal>)}
-          </Sequence></div>}
-        </div></Reveal>
+          <div className="signal-section">
+            <SectionRow number="03" title="Projects" meta="6 projects" open={expandedSections.has("projects")} onClick={() => toggleSection("projects")} />
+            {openedSections.has("projects") && <div className="signal-panel" id="signal-panel-projects" hidden={!expandedSections.has("projects")}>
+              <DecodeTogether>
+                {(["Machine learning", "Software engineering"] as const).map(category => <div className="signal-project-category" key={category}>
+                  <p className="signal-panel-label"><DecodeText text={category.toUpperCase()} /></p>
+                  {jobProjects.map((project, index) => project.category === category ? <div className="signal-detail-item" key={project.title}>
+                    <DetailRow title={project.title} open={expandedProjects.has(index)} onClick={() => toggleProject(index)} id={"signal-project-" + index} index={index} />
+                    {openedProjects.has(index) && <div className="signal-detail-content" id={"signal-project-" + index} hidden={!expandedProjects.has(index)}>
+                      <DecodeTogether>
+                        <ul className="signal-bullets">{project.bullets.map(bullet => <li key={bullet}><DecodeText text={bullet} /></li>)}</ul>
+                        <Skills skills={project.skills} />
+                        {project.link && <a className="signal-project-link" href={project.link} target="_blank" rel="noopener noreferrer"><DecodeText text="View project" /> <ArrowUpRight size={14} aria-hidden="true" /></a>}
+                      </DecodeTogether>
+                    </div>}
+                  </div> : null)}
+                </div>)}
+              </DecodeTogether>
+            </div>}
+          </div>
 
-        <Reveal step={4}><div className="signal-section">
-          <SectionRow number="03" title="Projects" meta="6 projects" open={expandedSections.has("projects")} onClick={() => toggleSection("projects")} />
-          {openedSections.has("projects") && <div className="signal-panel" id="signal-panel-projects" hidden={!expandedSections.has("projects")}><Sequence>
-            {(["Machine learning", "Software engineering"] as const).map((category, categoryIndex) => <div className="signal-project-category" key={category}>
-              <Reveal step={categoryIndex === 0 ? 0 : 3}><p className="signal-panel-label"><DecodeText text={category.toUpperCase()} /></p></Reveal>
-              {jobProjects.map((project, index) => project.category === category ? <Reveal step={index + categoryIndex + 1} key={project.title}><div className="signal-detail-item">
-                <DetailRow title={project.title} open={expandedProjects.has(index)} onClick={() => toggleProject(index)} id={"signal-project-" + index} index={index} />
-                {openedProjects.has(index) && <div className="signal-detail-content" id={"signal-project-" + index} hidden={!expandedProjects.has(index)}><Sequence>
-                  <ul className="signal-bullets">{project.bullets.map((bullet, bulletIndex) => <Reveal step={bulletIndex} key={bullet}><li><DecodeText text={bullet} /></li></Reveal>)}</ul>
-                  <Reveal step={project.bullets.length}><Skills skills={project.skills} /></Reveal>
-                  {project.link && <Reveal step={project.bullets.length + 1}><a className="signal-project-link" href={project.link} target="_blank" rel="noopener noreferrer"><DecodeText text="View project" /> <ArrowUpRight size={14} aria-hidden="true" /></a></Reveal>}
-                </Sequence></div>}
-              </div></Reveal> : null)}
-            </div>)}
-          </Sequence></div>}
-        </div></Reveal>
-
-        <Reveal step={5}><div className="signal-section">
-          <SectionRow number="04" title="Contact" meta="School email" open={expandedSections.has("contact")} onClick={() => toggleSection("contact")} />
-          {openedSections.has("contact") && <div className="signal-panel" id="signal-panel-contact" hidden={!expandedSections.has("contact")}><Sequence><Reveal step={0}><p className="signal-email"><DecodeText text="hmalik39 [at] gatech [dot] edu" /></p></Reveal></Sequence></div>}
-        </div></Reveal>
-      </div>
-
-      <Reveal step={6}><div className="signal-links">
-        <a href="https://github.com/hadimalik12" target="_blank" rel="noopener noreferrer"><DecodeText text="GitHub" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
-        <a href="https://www.linkedin.com/in/hadimalik12/" target="_blank" rel="noopener noreferrer"><DecodeText text="LinkedIn" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
-        <a className="signal-resume" href="/Hadi_Malik_Resume.pdf" target="_blank" rel="noopener noreferrer"><DecodeText text="Full résumé" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
-      </div></Reveal>
-    </Sequence></main>
+          <div className="signal-section">
+            <SectionRow number="04" title="Contact" meta="School email" open={expandedSections.has("contact")} onClick={() => toggleSection("contact")} />
+            {openedSections.has("contact") && <div className="signal-panel" id="signal-panel-contact" hidden={!expandedSections.has("contact")}>
+              <DecodeTogether><p className="signal-email"><DecodeText text="hmalik39 [at] gatech [dot] edu" /></p></DecodeTogether>
+            </div>}
+          </div>
+        </div>,
+        <div className="signal-links" key="links">
+          <a href="https://github.com/hadimalik12" target="_blank" rel="noopener noreferrer"><DecodeText text="GitHub" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
+          <a href="https://www.linkedin.com/in/hadimalik12/" target="_blank" rel="noopener noreferrer"><DecodeText text="LinkedIn" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
+          <a className="signal-resume" href="/Hadi_Malik_Resume.pdf" target="_blank" rel="noopener noreferrer"><DecodeText text="Full résumé" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
+        </div>,
+      ]} />
+    </main>
   </div>;
 }
