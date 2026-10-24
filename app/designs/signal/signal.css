@@ -4,8 +4,8 @@
   --signal-muted: #adb3b6;
   --signal-dim: #7d8589;
   --signal-rule: #3c4143;
-  --signal-accent: #7de2c4;
-  --signal-accent-soft: rgba(125, 226, 196, .07);
+  --signal-accent: #e7c978;
+  --signal-accent-soft: rgba(231, 201, 120, .08);
   --signal-resume: var(--signal-accent);
   min-height: 100svh;
   box-sizing: border-box;
@@ -94,7 +94,7 @@
 .signal-pixel-reveal { position: relative; display: grid; width: 24px; height: 24px; place-items: center; }
 .signal-pixel-resolved { position: absolute; inset: 0; display: grid; place-items: center; }
 .signal-pixel-resolved { overflow: hidden; }
-.signal-pixel-scan { position: absolute; z-index: 2; top: 1px; bottom: 1px; width: 1px; background: var(--signal-accent); box-shadow: 0 0 5px rgba(125,226,196,.55); }
+.signal-pixel-scan { position: absolute; z-index: 2; top: 1px; bottom: 1px; width: 1px; background: var(--signal-accent); box-shadow: 0 0 5px rgba(231,201,120,.55); }
 .signal-pixel-link svg { width: 24px; height: 24px; image-rendering: pixelated; transition: color .2s ease, transform .2s steps(2, end); }
 .signal-pixel-link:hover svg, .signal-pixel-link:focus-visible svg { color: var(--signal-accent); transform: translateY(-2px); }
 .signal-links .signal-resume-icon { color: var(--signal-resume); }
