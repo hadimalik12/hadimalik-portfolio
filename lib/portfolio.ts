@@ -123,19 +123,6 @@ export const jobProjects: Project[] = [
     link: "https://github.com/Benito-Karkada/CS2340C_Team27",
   },
   {
-    imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/githublogo.png",
-    title: "QuranID",
-    category: "Software engineering",
-    description:
-      "Created a tool that identifies Quranic verses from spoken audio using Google Cloud Speech-to-Text and Levenshtein matching.",
-    bullets: [
-      "Created a tool that identifies Quranic verses from spoken audio.",
-      "Used Google Cloud Speech-to-Text and Levenshtein matching.",
-    ],
-    skills: ["Python", "Speech-to-Text", "Audio Processing"],
-    link: "https://github.com/hadimalik12/quranID",
-  },
-  {
     imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/hadimalikportfolio.png",
     title: "hadimalik.com",
     category: "Software engineering",

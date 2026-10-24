@@ -1,24 +1,32 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Github } from "lucide-react";
 import Link from "next/link";
+import { FileTextSharp, Github as PixelGithub, Linkedin as PixelLinkedin, QuoteTextInline } from "pixelarticons/react";
+import SignalTerminal from "./SignalTerminal";
 import { jobPositions, jobProjects } from "@/lib/portfolio";
 
-type Section = "education" | "experience" | "projects" | "contact";
+type Section = "about" | "education" | "experience" | "projects" | "contact";
 
 type DecodeRegistration = { complete: () => void; cancel: () => void };
 const CompletionContext = createContext<(() => DecodeRegistration) | null>(null);
+const PlaybackContext = createContext(true);
 
 function Sequence({ stages }: { stages: ReactNode[] }) {
   const [active, setActive] = useState(0);
   const advance = useCallback(() => setActive(current => current + 1), []);
   const ignore = useCallback(() => {}, []);
-  // Keep every revealed stage in the same keyed list. Moving a completed stage
-  // into a separate list remounts it and restarts its DecodeText animations.
-  return <>{stages.slice(0, active + 1).map((stage, index) =>
-    <DecodeGroup key={index} onComplete={index === active ? advance : ignore}>{stage}</DecodeGroup>
-  )}</>;
+  // Every stage occupies its final space from the first frame. Upcoming stages
+  // remain invisible and begin decoding only when the prior stage has finished.
+  return <>{stages.map((stage, index) => {
+    const state = index < active ? "complete" : index === active ? "active" : "waiting";
+    return <div className="signal-sequence-stage" data-sequence-state={state} aria-hidden={state === "waiting"} key={index}>
+      <PlaybackContext.Provider value={index <= active}>
+        <DecodeGroup onComplete={index === active ? advance : ignore}>{stage}</DecodeGroup>
+      </PlaybackContext.Provider>
+    </div>;
+  })}</>;
 }
 
 function DecodeTogether({ children }: { children: ReactNode }) {
@@ -28,6 +36,13 @@ function DecodeTogether({ children }: { children: ReactNode }) {
 }
 
 const cipher = "0123456789-_+*/{}[]<>~^=:;#@%&";
+const verbs = ["creating", "building", "learning", "living", "hooping"];
+const quotes = [
+  "Be a connoisseur, not a customer.",
+  "When you're born, you look like your parents. When you die, you look like your decisions.",
+  "The curse of discipline is that every day looks the same. The curse of indiscipline is that every year looks the same.",
+  "The brain is a muscle, and like any muscle, the more you work it, the stronger it becomes.",
+];
 
 function cipherAt(seed: number, position: number, tick: number) {
   let value = seed ^ Math.imul(position + 1, 0x45d9f3b) ^ Math.imul(tick + 1, 0x119de1f3);
@@ -38,6 +53,7 @@ function cipherAt(seed: number, position: number, tick: number) {
 
 function DecodeText({ text, byLine = false }: { text: string; byLine?: boolean }) {
   const register = useContext(CompletionContext);
+  const playback = useContext(PlaybackContext);
   const registerRef = useRef(register);
   registerRef.current = register;
   const [motion, setMotion] = useState({ progress: 0, elapsed: 0 });
@@ -80,6 +96,10 @@ function DecodeText({ text, byLine = false }: { text: string; byLine?: boolean }
   }, [text, byLine]);
 
   useEffect(() => {
+    if (!playback) {
+      setMotion({ progress: 0, elapsed: 0 });
+      return;
+    }
     const registration = registerRef.current?.();
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setMotion({ progress: 1, elapsed: 0 });
@@ -99,7 +119,7 @@ function DecodeText({ text, byLine = false }: { text: string; byLine?: boolean }
     setMotion({ progress: 0, elapsed: 0 });
     frame = requestAnimationFrame(render);
     return () => { cancelAnimationFrame(frame); registration?.cancel(); };
-  }, [text, byLine]);
+  }, [text, byLine, playback]);
 
   // For paragraphs and bullets, each measured visual line gets the same sweep,
   // including after a resize. Settled text sheds the temporary animation spans.
@@ -154,7 +174,7 @@ function DecodeGroup({ onComplete, children }: { onComplete: () => void; childre
 }
 
 function SectionRow({ number, title, meta, open, onClick }: { number: string; title: string; meta: string; open: boolean; onClick: () => void }) {
-  return <button className="signal-section-row" type="button" aria-expanded={open} aria-controls={open ? "signal-panel-" + title.toLowerCase() : undefined} onClick={onClick}>
+  return <button className="signal-section-row" type="button" aria-expanded={open} aria-controls={open ? "signal-panel-" + title.toLowerCase().replace(/\s+/g, "-") : undefined} onClick={onClick}>
     <span className="signal-number"><DecodeText text={number} /></span>
     <span className="signal-section-name"><DecodeText text={title} /></span>
     <span className="signal-section-meta"><DecodeText text={meta} /></span>
@@ -173,6 +193,149 @@ function DetailRow({ title, subtitle, meta, open, onClick, id, index }: { title:
 
 function Skills({ skills }: { skills: string[] }) {
   return <ul className="signal-skills" aria-label="Skills">{skills.map(skill => <li key={skill}><DecodeText text={skill} /></li>)}</ul>;
+}
+
+function TypedVerbs() {
+  const register = useContext(CompletionContext);
+  const playback = useContext(PlaybackContext);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [characters, setCharacters] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+  const completion = useRef<DecodeRegistration | null>(null);
+  const firstWordComplete = useRef(false);
+  const sectionRevealTimer = useRef<number | null>(null);
+
+  useEffect(() => () => {
+    if (sectionRevealTimer.current) window.clearTimeout(sectionRevealTimer.current);
+  }, []);
+
+  useEffect(() => {
+    if (!playback || completion.current) return;
+    completion.current = register?.() ?? null;
+    return () => completion.current?.cancel();
+  }, [playback, register]);
+
+  useEffect(() => {
+    if (!playback) return;
+    const word = verbs[wordIndex];
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setCharacters(word.length);
+      if (!firstWordComplete.current) {
+        firstWordComplete.current = true;
+        completion.current?.complete();
+      }
+      return;
+    }
+    if (!deleting && characters === word.length && !firstWordComplete.current) {
+      firstWordComplete.current = true;
+      sectionRevealTimer.current = window.setTimeout(() => completion.current?.complete(), 220);
+    }
+    const delay = !deleting && characters === word.length ? 3800 : deleting ? 45 : 80;
+    const timer = window.setTimeout(() => {
+      if (!deleting && characters < word.length) setCharacters(current => current + 1);
+      else if (!deleting) setDeleting(true);
+      else if (characters > 0) setCharacters(current => current - 1);
+      else {
+        setDeleting(false);
+        setWordIndex(current => (current + 1) % verbs.length);
+      }
+    }, delay);
+    return () => window.clearTimeout(timer);
+  }, [characters, deleting, playback, wordIndex]);
+
+  return <p className="signal-typed-verbs" aria-label={verbs.join(", ")}>
+    <span aria-hidden="true">{verbs[wordIndex].slice(0, characters)}<span className="signal-typed-cursor">_</span></span>
+  </p>;
+}
+
+function PixelIconReveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+  const register = useContext(CompletionContext);
+  const playback = useContext(PlaybackContext);
+  const registerRef = useRef(register);
+  registerRef.current = register;
+  const [motion, setMotion] = useState({ progress: 0, elapsed: 0 });
+
+  useEffect(() => {
+    if (!playback) {
+      setMotion({ progress: 0, elapsed: 0 });
+      return;
+    }
+    const registration = registerRef.current?.();
+    let frame = 0;
+    const start = performance.now() + delay;
+    const duration = 1050;
+    const render = (now: number) => {
+      const elapsed = Math.max(0, now - start);
+      const progress = Math.min(1, elapsed / duration);
+      setMotion({ progress, elapsed });
+      if (progress < 1) frame = requestAnimationFrame(render);
+      else registration?.complete();
+    };
+    frame = requestAnimationFrame(render);
+    return () => {
+      cancelAnimationFrame(frame);
+      registration?.cancel();
+    };
+  }, [delay, playback]);
+
+  const eased = motion.progress * motion.progress * (3 - 2 * motion.progress);
+  return <span className="signal-pixel-reveal" aria-hidden="true">
+    <span className="signal-pixel-resolved" style={{ clipPath: `inset(0 ${100 - eased * 100}% 0 0)`, opacity: .25 + eased * .75 }}>{children}</span>
+    {motion.progress > 0 && motion.progress < 1 && <span className="signal-pixel-scan" style={{ left: `${eased * 100}%` }} />}
+  </span>;
+}
+
+function AtlantaClock() {
+  const [time, setTime] = useState("--:--:--");
+
+  useEffect(() => {
+    const formatter = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "America/New_York",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    });
+    const update = () => setTime(formatter.format(new Date()));
+    update();
+    const interval = window.setInterval(update, 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return <div className="signal-clock" aria-label={`Current time in Atlanta: ${time}`}>
+    <span>atlanta</span>
+    <span aria-hidden="true">•</span>
+    <time>{time}</time>
+  </div>;
+}
+
+function QuoteCorner() {
+  const [open, setOpen] = useState(false);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  useEffect(() => {
+    if (!open) return;
+    const timer = window.setTimeout(() => setOpen(false), 9000);
+    return () => window.clearTimeout(timer);
+  }, [open, quoteIndex]);
+
+  const nextQuote = () => setQuoteIndex(current => (current + 1) % quotes.length);
+
+  return <aside className="signal-quote-shell" aria-label="Favorite quotes">
+    {open && <div className="signal-quote-panel" key={quoteIndex}>
+      <button className="signal-quote-close" type="button" onClick={() => setOpen(false)} aria-label="Close quote">×</button>
+      <div className="signal-quote-copy">
+        <span aria-hidden="true">“</span>
+        <blockquote><DecodeText key={quotes[quoteIndex]} text={quotes[quoteIndex]} byLine /></blockquote>
+      </div>
+      <button className="signal-quote-next" type="button" onClick={nextQuote}>
+        <span>next</span><span aria-hidden="true">→</span>
+      </button>
+    </div>}
+    <button className="signal-quote-launcher" type="button" aria-expanded={open} onClick={() => setOpen(current => !current)} aria-label={open ? "Close favorite quote" : "Show a favorite quote"} data-tooltip="quotes">
+      <QuoteTextInline aria-hidden="true" />
+    </button>
+  </aside>;
 }
 
 export default function SignalPortfolio() {
@@ -215,19 +378,25 @@ export default function SignalPortfolio() {
 
   return <div className="signal" id="top">
     <a className="signal-skip" href="#signal-main">Skip to content</a>
+    <AtlantaClock />
     <main id="signal-main" className="signal-main">
       <Sequence stages={[
-        <div className="signal-intro" key="name">
-          <h1><DecodeText text="Hadi Malik" /><span className="signal-cursor" aria-hidden="true">_</span></h1>
+        <div className="signal-intro signal-name-stage" key="name">
+          <h1><DecodeText text="Hadi Malik" /></h1>
         </div>,
-        <div className="signal-intro" key="intro">
-          <p className="signal-description">
-            <DecodeText text="Studying computer science at Georgia Tech with a concentration in intelligence and cybersecurity. Interested in opportunities in software engineering, machine learning engineering, and security engineering." byLine />
-          </p>
+        <div className="signal-verb-stage" key="verbs">
+          <TypedVerbs />
         </div>,
         <div className="signal-index" aria-label="Portfolio sections" key="sections">
           <div className="signal-section">
-            <SectionRow number="01" title="Education" meta="Georgia Tech" open={expandedSections.has("education")} onClick={() => toggleSection("education")} />
+            <SectionRow number="01" title="About me" meta="Introduction" open={expandedSections.has("about")} onClick={() => toggleSection("about")} />
+            {openedSections.has("about") && <div className="signal-panel" id="signal-panel-about-me" hidden={!expandedSections.has("about")}>
+              <DecodeTogether><p className="signal-about-copy"><DecodeText text="Studying computer science at Georgia Tech with a concentration in intelligence and cybersecurity. Interested in opportunities in software engineering, machine learning engineering, and security engineering." byLine /></p></DecodeTogether>
+            </div>}
+          </div>
+
+          <div className="signal-section">
+            <SectionRow number="02" title="Education" meta="Georgia Tech" open={expandedSections.has("education")} onClick={() => toggleSection("education")} />
             {openedSections.has("education") && <div className="signal-panel" id="signal-panel-education" hidden={!expandedSections.has("education")}>
               <DecodeTogether>
                 <p className="signal-panel-label"><DecodeText text="GEORGIA INSTITUTE OF TECHNOLOGY" /></p>
@@ -238,7 +407,7 @@ export default function SignalPortfolio() {
           </div>
 
           <div className="signal-section">
-            <SectionRow number="02" title="Experience" meta="4 roles" open={expandedSections.has("experience")} onClick={() => toggleSection("experience")} />
+            <SectionRow number="03" title="Experience" meta="4 roles" open={expandedSections.has("experience")} onClick={() => toggleSection("experience")} />
             {openedSections.has("experience") && <div className="signal-panel" id="signal-panel-experience" hidden={!expandedSections.has("experience")}>
               <DecodeTogether>
                 {jobPositions.map((job, index) => <div className="signal-detail-item" key={job.place + index}>
@@ -255,7 +424,7 @@ export default function SignalPortfolio() {
           </div>
 
           <div className="signal-section">
-            <SectionRow number="03" title="Projects" meta="6 projects" open={expandedSections.has("projects")} onClick={() => toggleSection("projects")} />
+            <SectionRow number="04" title="Projects" meta="5 projects" open={expandedSections.has("projects")} onClick={() => toggleSection("projects")} />
             {openedSections.has("projects") && <div className="signal-panel" id="signal-panel-projects" hidden={!expandedSections.has("projects")}>
               <DecodeTogether>
                 {(["Machine learning", "Software engineering"] as const).map(category => <div className="signal-project-category" key={category}>
@@ -266,7 +435,11 @@ export default function SignalPortfolio() {
                       <DecodeTogether>
                         <ul className="signal-bullets">{project.bullets.map(bullet => <li key={bullet}><DecodeText text={bullet} byLine /></li>)}</ul>
                         <Skills skills={project.skills} />
-                        {project.link && <a className="signal-project-link" href={project.link} target="_blank" rel="noopener noreferrer"><DecodeText text="View project" /> <ArrowUpRight size={14} aria-hidden="true" /></a>}
+                        {project.link && <a className="signal-project-link" href={project.link} target="_blank" rel="noopener noreferrer">
+                          <span className="signal-project-link-icon"><Github size={15} aria-hidden="true" /></span>
+                          <span className="signal-project-link-copy"><small>github</small><strong><DecodeText text="Open repository" /></strong></span>
+                          <ArrowUpRight className="signal-project-link-arrow" size={14} aria-hidden="true" />
+                        </a>}
                       </DecodeTogether>
                     </div>}
                   </div> : null)}
@@ -276,18 +449,20 @@ export default function SignalPortfolio() {
           </div>
 
           <div className="signal-section">
-            <SectionRow number="04" title="Contact" meta="School email" open={expandedSections.has("contact")} onClick={() => toggleSection("contact")} />
+            <SectionRow number="05" title="Contact" meta="Email" open={expandedSections.has("contact")} onClick={() => toggleSection("contact")} />
             {openedSections.has("contact") && <div className="signal-panel" id="signal-panel-contact" hidden={!expandedSections.has("contact")}>
               <DecodeTogether><p className="signal-email"><DecodeText text="hmalik39 [at] gatech [dot] edu" /></p></DecodeTogether>
             </div>}
           </div>
         </div>,
         <div className="signal-links" key="links">
-          <a href="https://github.com/hadimalik12" target="_blank" rel="noopener noreferrer"><DecodeText text="GitHub" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
-          <a href="https://www.linkedin.com/in/hadimalik12/" target="_blank" rel="noopener noreferrer"><DecodeText text="LinkedIn" /> <ArrowUpRight size={13} aria-hidden="true" /></a>
-          <Link className="signal-resume" href="/Hadi_Malik_Resume.pdf" prefetch={false} target="_blank" rel="noopener noreferrer"><DecodeText text="Full résumé" /> <ArrowUpRight size={13} aria-hidden="true" /></Link>
+          <a className="signal-pixel-link" href="https://github.com/hadimalik12" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub"><PixelIconReveal><PixelGithub /></PixelIconReveal></a>
+          <a className="signal-pixel-link" href="https://www.linkedin.com/in/hadimalik12/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn"><PixelIconReveal delay={90}><PixelLinkedin /></PixelIconReveal></a>
+          <Link className="signal-pixel-link signal-resume-icon" href="/Hadi_Malik_Resume.pdf" prefetch={false} target="_blank" rel="noopener noreferrer" aria-label="Full résumé" title="Full résumé"><PixelIconReveal delay={180}><FileTextSharp /></PixelIconReveal></Link>
         </div>,
       ]} />
     </main>
+    <SignalTerminal />
+    <QuoteCorner />
   </div>;
 }
