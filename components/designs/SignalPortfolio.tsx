@@ -13,9 +13,11 @@ function Sequence({ stages }: { stages: ReactNode[] }) {
   const [active, setActive] = useState(0);
   const advance = useCallback(() => setActive(current => current + 1), []);
   const ignore = useCallback(() => {}, []);
-  return <>{stages.slice(0, active).map((stage, index) => <DecodeGroup key={index} onComplete={ignore}>{stage}</DecodeGroup>)}
-    {active < stages.length && <DecodeGroup key={active} onComplete={advance}>{stages[active]}</DecodeGroup>}
-  </>;
+  // Keep every revealed stage in the same keyed list. Moving a completed stage
+  // into a separate list remounts it and restarts its DecodeText animations.
+  return <>{stages.slice(0, active + 1).map((stage, index) =>
+    <DecodeGroup key={index} onComplete={index === active ? advance : ignore}>{stage}</DecodeGroup>
+  )}</>;
 }
 
 function DecodeTogether({ children }: { children: ReactNode }) {
@@ -197,8 +199,8 @@ export default function SignalPortfolio() {
             {openedSections.has("education") && <div className="signal-panel" id="signal-panel-education" hidden={!expandedSections.has("education")}>
               <DecodeTogether>
                 <p className="signal-panel-label"><DecodeText text="GEORGIA INSTITUTE OF TECHNOLOGY" /></p>
-                <div className="signal-degree"><span><DecodeText text="B.S. Computer Science" /></span><span><DecodeText text="Expected December 2026" /></span></div>
-                <div className="signal-degree"><span><DecodeText text="M.S. Computer Science" /></span><span><DecodeText text="Expected May 2028" /></span></div>
+                <div className="signal-degree"><span><DecodeText text="B.S. Computer Science" /></span><span><DecodeText text="December 2026" /></span></div>
+                <div className="signal-degree"><span><DecodeText text="M.S. Computer Science" /></span><span><DecodeText text="May 2028" /></span></div>
               </DecodeTogether>
             </div>}
           </div>
