@@ -1,0 +1,99 @@
+.court-page { --court-ink:#f0eeea; --court-muted:#b6b4af; --court-line:#ffffff22; position:relative; isolation:isolate; background:#000; color:var(--court-ink); font-size:15px; }
+.court-page * { box-sizing:border-box; }
+.court-page h1,.court-page h2,.court-page h3,.court-page h4,.court-page p { margin:0; }
+.court-page a { text-decoration:none; }
+.court-page a:focus-visible,.court-page summary:focus-visible { outline:2px solid #e7ac78; outline-offset:6px; border-radius:3px; }
+.court-skip { position:fixed; z-index:50; top:-100px; left:20px; background:#111; padding:12px 20px; }
+.court-skip:focus { top:20px; }
+.court-stage { position:fixed; inset:0; height:100svh; width:100%; overflow:hidden; z-index:0; pointer-events:none; }
+.court-render { position:absolute; inset:0; }
+.court-render canvas { width:100%; height:100%; display:block; }
+.court-loading { position:absolute; right:8%; bottom:12%; font:11px/1.7 ui-monospace,monospace; max-width:220px; color:#eee; }
+.court-vignette { position:absolute; inset:0; background:linear-gradient(90deg,#000b,transparent 76%),linear-gradient(0deg,#0008,transparent 28%); }
+.court-story { position:relative; z-index:1; }
+.court-chapter { position:relative; min-height:110svh; display:flex; align-items:center; padding:15svh 6%; scroll-margin-top:0; }
+.court-intro { min-height:100svh; padding:7%; }
+.court-intro-copy { padding-top:20px; }
+.court-eyebrow { font:10px/1.5 ui-monospace,SFMono-Regular,monospace; letter-spacing:1.5px; text-transform:uppercase; color:#c8c5be; }
+.court-intro h1 { font-family:Impact,"Arial Narrow",sans-serif; font-size:clamp(100px,12vw,184px); line-height:.88; font-weight:400; letter-spacing:-2px; margin:30px 0 24px; }
+.court-intro-description { font-size:18px; line-height:1.65; color:#dedbd4; }
+.court-socials { display:flex; flex-wrap:wrap; gap:24px; margin-top:24px; }
+.court-socials a { display:flex; align-items:center; gap:8px; font-size:12px; min-height:44px; }
+.court-scroll-cue { position:absolute; bottom:36px; left:7%; display:flex; align-items:center; gap:12px; min-height:44px; font:11px ui-monospace,monospace; color:#ccc; }
+.court-progress { position:fixed; right:30px; bottom:26px; z-index:3; pointer-events:none; display:flex; align-items:center; gap:14px; color:#ddd; font:10px ui-monospace,monospace; text-shadow:0 1px 4px #000; }
+.court-progress > div { width:80px; height:2px; background:#ffffff30; }
+.court-progress i { display:block; height:100%; width:100%; transform:scaleX(0); transform-origin:left; background:#e6b387; }
+.court-panel { width:min(560px,46vw); padding:32px; border:1px solid #ffffff20; border-radius:12px; background:linear-gradient(130deg,#111111e8,#080808cc); backdrop-filter:blur(12px); box-shadow:0 20px 80px #0004,inset 0 1px 0 #ffffff05; }
+.court-panel h2 { font-size:clamp(36px,3.8vw,58px); line-height:1.06; letter-spacing:-2px; font-weight:500; }
+.court-panel > .court-eyebrow { margin-bottom:20px; }
+.court-degree { margin-top:28px; border-top:1px solid var(--court-line); padding-top:24px; }
+.court-degree h3 { font-size:20px; font-weight:500; letter-spacing:-.5px; }
+.court-degree p { font:12px/1.6 ui-monospace,monospace; color:var(--court-muted); margin-top:12px; }
+.court-text-link { display:inline-flex; align-items:center; gap:10px; min-height:44px; font-size:12px; }
+.court-section-heading { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:24px; }
+.court-section-heading h2 { font-size:clamp(36px,3.8vw,58px); letter-spacing:-2px; font-weight:500; }
+.court-resume { color:#e7bd96; white-space:nowrap; }
+.court-jobs { border-top:1px solid var(--court-line); }
+.court-job { border-bottom:1px solid var(--court-line); }
+.court-job summary { list-style:none; display:flex; justify-content:space-between; gap:20px; align-items:center; cursor:pointer; padding:23px 0; }
+.court-job summary::-webkit-details-marker,.court-project-detail summary::-webkit-details-marker { display:none; }
+.court-job summary:hover strong { color:#e7bd96; }
+.court-job-name { display:flex; flex-direction:column; gap:7px; }
+.court-date { font:11px/1.6 ui-monospace,monospace; color:var(--court-muted); }
+.court-job-name strong { font-size:23px; letter-spacing:-.6px; font-weight:500; transition:color 180ms; }
+.court-job-name > span:last-child { font-size:13px; line-height:1.5; color:#ccc; }
+.court-expand { flex-shrink:0; color:#a8a5a0; transition:transform 200ms; }
+.court-job[open] > summary .court-expand,.court-project-detail[open] > summary .court-expand { transform:rotate(45deg); }
+.court-job-detail { padding-bottom:26px; }
+.court-job-detail ul { list-style:disc; padding-left:18px; font-size:14px; line-height:1.85; color:#cbc8c2; }
+.court-job-detail li { margin-bottom:10px; }
+.court-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:18px; }
+.court-tags span { font:10px/1.5 ui-monospace,monospace; color:#c2beb7; background:#ffffff04; border:1px solid var(--court-line); border-radius:4px; padding:5px 8px; transition:background 180ms; }
+.court-tags span:hover { background:#ffffff12; }
+.court-project-grid { margin-top:28px; }
+.court-project { padding:24px 0; border-top:1px solid var(--court-line); }
+.court-project:last-child { padding-bottom:0; }
+.court-project h3 { font-size:21px; letter-spacing:-.5px; line-height:1.3; font-weight:500; }
+.court-project h3 a { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.court-project h3 a:hover { color:#e7bd96; }
+.court-project h3 svg { flex-shrink:0; margin-top:4px; }
+.court-project > p,.court-project-detail p { color:#cbc8c2; font-size:14px; line-height:1.85; margin-top:14px; }
+.court-email { font:clamp(11px,1.2vw,15px)/1.8 ui-monospace,monospace; margin-top:26px!important; }
+.court-browse { display:inline-flex; align-items:center; gap:16px; padding:16px 18px; margin-top:32px; background:#eee9e1; border-radius:6px; color:#171717; font-size:13px; }
+.court-browse:hover { background:#fff; }
+.court-directory { position:relative; padding:14svh 6% 100px; min-height:100svh; }
+.court-directory-panel { max-width:1200px; margin:0 auto; padding:44px; background:#080808ed; border:1px solid #ffffff25; border-radius:14px; backdrop-filter:blur(16px); }
+.court-directory-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; }
+.court-directory-grid > div > h3 { font-size:18px; font-weight:500; margin:12px 0 24px; }
+.court-directory-projects h4 { font:11px/1.5 ui-monospace,monospace; color:#b8b4ad; margin:24px 0 12px; }
+.court-project-detail { border-bottom:1px solid var(--court-line); }
+.court-project-detail summary { display:flex; justify-content:space-between; align-items:center; gap:16px; list-style:none; padding:19px 0; cursor:pointer; font-size:16px; }
+.court-project-detail > div { padding-bottom:24px; }
+.court-project-detail > div .court-text-link { margin-top:12px; }
+.court-directory footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:20px; font:11px/1.8 ui-monospace,monospace; margin-top:44px; padding-top:24px; border-top:1px solid var(--court-line); color:#b8b4ad; }
+@media(max-width:900px) { .court-panel { width:55vw; padding:26px; } .court-directory-grid { gap:36px; } }
+@media(max-width:700px) {
+  .court-chapter { min-height:115svh; padding:34svh 6% 13svh; align-items:flex-end; }
+  .court-intro { padding:12svh 7%; min-height:100svh; align-items:flex-start; }
+  .court-intro h1 { font-size:96px; margin:24px 0 18px; }
+  .court-intro-copy { padding:0; }
+  .court-intro-description { font-size:15px; }
+  .court-eyebrow { font-size:9px; letter-spacing:1px; }
+  .court-socials { gap:17px; margin-top:16px; }
+  .court-socials a { font-size:11px; }
+  .court-scroll-cue { bottom:30px; font-size:10px; }
+  .court-progress { bottom:18px; right:20px; font-size:9px; gap:8px; }
+  .court-progress > div { width:35px; }
+  .court-vignette { background:linear-gradient(0deg,#000a,transparent 80%); }
+  .court-panel { width:100%; padding:24px; background:linear-gradient(140deg,#101010eb,#080808da); }
+  .court-panel h2,.court-section-heading h2 { font-size:36px; letter-spacing:-1.5px; }
+  .court-job-name strong { font-size:21px; }
+  .court-degree h3 { font-size:18px; }
+  .court-project h3 { font-size:20px; }
+  .court-directory { padding:10svh 5% 70px; }
+  .court-directory-panel { padding:24px; }
+  .court-directory-grid { grid-template-columns:1fr; gap:30px; }
+  .court-directory footer { gap:10px; }
+  .court-browse { font-size:12px; padding:15px 12px; gap:12px; }
+}
+@media(prefers-reduced-motion:reduce) { html:has(.court-page) { scroll-behavior:auto; } .court-page * { transition:none!important; } }

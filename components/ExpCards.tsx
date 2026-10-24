@@ -4,44 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { MoveUpRight } from "lucide-react";
 
-const jobPositions = [
-  {
-    timeline: "May 2026 – Aug 2026",
-    currentPosition: "Software Engineer Intern",
-    place: "Amazon",
-    description:
-      "Built a React, S3, and CloudFront debugging platform used by 15+ Alexa Smart Home teams. Connected DynamoDB and CloudWatch data through REST APIs and Lambda, cutting debug time by 4 hours and enabling sub-500ms analysis of millions of daily requests. Automated 99% of tests with integration coverage.",
-    skills: ["React", "AWS Lambda", "S3", "CloudFront", "DynamoDB", "CloudWatch"],
-    link: "https://www.amazon.com/alexa-smart-home/b?ie=UTF8&node=21442899011",
-  },
-  {
-    timeline: "Aug 2025 – Present",
-    currentPosition: "Machine Learning Research Assistant",
-    place: "Georgia Tech School of Cybersecurity and Privacy",
-    description:
-      "Researching model provenance and training-data traces with Prof. Vassilis Zikas. Co-authored “Causal Model Provenance via Shard Witness Auditing,” submitted to AISTATS 2026, and evaluated fine-tuning tests and KGW watermarking with calibrated detectors.",
-    skills: ["Machine Learning", "Hugging Face", "Model Provenance", "Watermarking"],
-    link: "https://faculty.cc.gatech.edu/~vzikas/",
-  },
-  {
-    timeline: "May 2025 – Jul 2025",
-    currentPosition: "Software Engineer Intern",
-    place: "In Good Company Works",
-    description:
-      "Built a full-stack AI advisor used by 15 businesses across 50+ client sessions. Personalized RAG pipelines reduced onboarding time by 60%; secure Node.js APIs cut backend latency by 50%; a companion Swift app increased engagement by 20%.",
-    skills: ["React", "Node.js", "Firebase", "RAG", "GCP", "Swift"],
-    link: "https://abeltheadvisor.web.app",
-  },
-  {
-    timeline: "May 2024 – Aug 2024",
-    currentPosition: "Software Engineer Intern",
-    place: "Verifacto Inc.",
-    description:
-      "Fine-tuned a LiLT classifier for insurance documents, achieving 99% accuracy. Migrated MySQL queries to MongoDB with vector indexes, improving query efficiency by 70%, and built a natural-language database chatbot that cut time-to-insight by 60%.",
-    skills: ["Python", "PyTorch", "Hugging Face", "MongoDB", "LangChain"],
-    link: "https://verifacto.com",
-  },
-];
+import { jobPositions } from "@/lib/portfolio";
 
 export default function ExpCard() {
   return (

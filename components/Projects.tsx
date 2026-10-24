@@ -5,60 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/co
 import { Badge } from "@/components/ui/badge";
 import { MoveRight, MoveUpRight } from "lucide-react";
 
-type Project = {
-  title: string;
-  description: string;
-  skills: string[];
-  link?: string;
-  imagePath?: string;
-};
-
-const jobProjects: Project[] = [
-  {
-    title: "Urology Report Generator",
-    description:
-      "Built a MedGemma-based report generator tuned on 600+ studies, achieving 94.8% report similarity. An evaluation pipeline uses BiomedCLIP to flag potential hallucinations; FlashAttention increased image capacity 5x and brought report generation under 60 seconds.",
-    skills: ["Python", "PyTorch", "OpenCV", "MedGemma", "LoRA", "Slurm"],
-    link: "https://github.com/hadimalik12/urology_report_generator",
-  },
-  {
-    title: "Credit Card Fraud Detector",
-    description:
-      "Built a four-model fraud benchmark on 590K IEEE-CIS transactions, reaching 0.9007 ROC-AUC. Compared PCA and anomaly-detection methods; DBSCAN achieved 85.0% recall and 82.3% accuracy.",
-    skills: ["Python", "PyTorch", "scikit-learn", "PCA", "DBSCAN"],
-  },
-  {
-    imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/vulnscan.png",
-    title: "VulnScan",
-    description:
-      "Developed a command-line vulnerability scanner for local and remote networks. It scans ports, grabs banners, maps services to CVEs through the NVD API, and exports HTML and JSON reports.",
-    skills: ["Python", "Networking", "CPE Matching", "NVD API"],
-    link: "https://github.com/hadimalik12/vulnerability-scanner",
-  },
-  {
-    imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/wandersync.png",
-    title: "WanderSync",
-    description:
-      "Built an Android travel planner for shared itineraries, destinations, dining, accommodations, and notes, with Firebase authentication and real-time syncing.",
-    skills: ["Java", "Android", "Firebase", "UI Design"],
-    link: "https://github.com/Benito-Karkada/CS2340C_Team27",
-  },
-  {
-    imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/githublogo.png",
-    title: "QuranID",
-    description:
-      "Created a tool that identifies Quranic verses from spoken audio using Google Cloud Speech-to-Text and Levenshtein matching.",
-    skills: ["Python", "Speech-to-Text", "Audio Processing"],
-    link: "https://github.com/hadimalik12/quranID",
-  },
-  {
-    imagePath: "https://hadimalik12.github.io/hadimalik-portfolio/hadimalikportfolio.png",
-    title: "hadimalik.com",
-    description: "This portfolio website, built with Next.js, TypeScript, and Tailwind CSS.",
-    skills: ["TypeScript", "Next.js", "Tailwind CSS"],
-    link: "https://github.com/hadimalik12/hadimalik-portfolio",
-  },
-];
+import { jobProjects, type Project } from "@/lib/portfolio";
 
 function ProjectCard({ project }: { project: Project }) {
   return (
