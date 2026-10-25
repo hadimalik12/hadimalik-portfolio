@@ -7,6 +7,8 @@
   --signal-accent: #e7c978;
   --signal-accent-soft: rgba(231, 201, 120, .08);
   --signal-resume: var(--signal-accent);
+  position: relative;
+  isolation: isolate;
   min-height: 100svh;
   box-sizing: border-box;
   padding: clamp(48px, 8vh, 88px) 0;
@@ -20,6 +22,7 @@
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
+.signal-stars { position: fixed; z-index: 0; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .signal *, .signal *::before, .signal *::after { box-sizing: border-box; }
 .signal [hidden] { display: none !important; }
 .signal h1, .signal p, .signal ul { margin: 0; }
@@ -35,7 +38,7 @@
 .signal-header { min-height: 72px; align-items: center; }
 .signal-header span:first-child { color: var(--signal-text); }
 .signal-footer { min-height: 54px; align-items: center; }
-.signal-main { flex: 0 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; column-gap: 28px; width: min(100% - 48px, 740px); margin: auto; }
+.signal-main { position: relative; z-index: 1; flex: 0 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; column-gap: 28px; width: min(100% - 48px, 740px); margin: auto; }
 .signal-sequence-stage:nth-child(1) { grid-column: 1; }
 .signal-sequence-stage:nth-child(2) { grid-column: 2; }
 .signal-sequence-stage:nth-child(n+3) { grid-column: 1 / -1; }
@@ -69,6 +72,7 @@
 .signal-detail-primary small { color: var(--signal-muted); font-size: 13px; line-height: 1.5; }
 .signal-detail-meta { color: var(--signal-muted); font-size: 13px; white-space: nowrap; }
 .signal-detail-content { padding: 7px 22px 26px 41px; }
+.signal-detail-content .signal-bullets li, .signal-detail-content .signal-skills, .signal-detail-content .signal-project-link { animation: none; }
 .signal-bullets { list-style: none; padding: 0; }
 .signal-bullets li { position: relative; margin-top: 13px; font-size: 14px; line-height: 1.85; animation: signal-enter .7s cubic-bezier(.22, 1, .36, 1) both; }
 .signal-bullets li::before { content: '—'; position: absolute; left: -21px; color: var(--signal-dim); }

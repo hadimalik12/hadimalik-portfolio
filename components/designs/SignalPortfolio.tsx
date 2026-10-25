@@ -36,7 +36,7 @@ function DecodeTogether({ children }: { children: ReactNode }) {
 }
 
 const cipher = "0123456789-_+*/{}[]<>~^=:;#@%&";
-const verbs = ["creating", "building", "learning", "living", "hooping"];
+const verbs = ["imagining", "building", "learning", "living", "hooping"];
 const quotes = [
   "Be a connoisseur, not a customer.",
   "When you're born, you look like your parents. When you die, you look like your decisions.",
@@ -192,7 +192,7 @@ function DetailRow({ title, subtitle, meta, open, onClick, id, index }: { title:
 }
 
 function Skills({ skills }: { skills: string[] }) {
-  return <ul className="signal-skills" aria-label="Skills">{skills.map(skill => <li key={skill}><DecodeText text={skill} /></li>)}</ul>;
+  return <ul className="signal-skills" aria-label="Skills">{skills.map(skill => <li key={skill}>{skill}</li>)}</ul>;
 }
 
 function TypedVerbs() {
@@ -338,6 +338,95 @@ function QuoteCorner() {
   </aside>;
 }
 
+function SignalStarfield() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const starCount = Math.min(150, Math.max(90, Math.round(window.innerWidth / 11)));
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+    let previousTime = performance.now();
+    const stars = Array.from({ length: starCount }, () => ({
+      x: (Math.random() - .5) * 2,
+      y: (Math.random() - .5) * 2,
+      z: Math.random() * .92 + .08,
+    }));
+
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+
+    const reset = (star: (typeof stars)[number]) => {
+      star.x = (Math.random() - .5) * 2;
+      star.y = (Math.random() - .5) * 2;
+      star.z = 1;
+    };
+
+    const draw = (time: number) => {
+      const delta = Math.min(32, time - previousTime);
+      previousTime = time;
+      context.clearRect(0, 0, width, height);
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const depth = Math.max(width, height) * .6;
+
+      for (const star of stars) {
+        const oldZ = star.z;
+        if (!reducedMotion) star.z -= delta * .000025;
+        if (star.z <= .035) reset(star);
+        const x = centerX + (star.x / star.z) * depth;
+        const y = centerY + (star.y / star.z) * depth;
+        if (x < -20 || x > width + 20 || y < -20 || y > height + 20) {
+          reset(star);
+          continue;
+        }
+        const visibility = Math.min(1, (1 - star.z) * 1.3 + .2);
+        const size = Math.min(1.85, .4 + (1 - star.z) * 1.5);
+        const color = "245,241,232";
+        if (!reducedMotion) {
+          const oldX = centerX + (star.x / oldZ) * depth;
+          const oldY = centerY + (star.y / oldZ) * depth;
+          context.beginPath();
+          context.moveTo(oldX, oldY);
+          context.lineTo(x, y);
+          context.strokeStyle = `rgba(${color},${visibility * .2})`;
+          context.lineWidth = Math.max(.4, size * .45);
+          context.stroke();
+        }
+        context.beginPath();
+        context.arc(x, y, size, 0, Math.PI * 2);
+        context.fillStyle = `rgba(${color},${visibility * .68})`;
+        context.fill();
+      }
+      frame = requestAnimationFrame(draw);
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    frame = requestAnimationFrame(draw);
+    return () => {
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="signal-stars" aria-hidden="true" />;
+}
+
 export default function SignalPortfolio() {
   const [expandedSections, setExpandedSections] = useState<Set<Section>>(() => new Set());
   const [expandedJobs, setExpandedJobs] = useState<Set<number>>(() => new Set());
@@ -377,6 +466,7 @@ export default function SignalPortfolio() {
   };
 
   return <div className="signal" id="top">
+    <SignalStarfield />
     <a className="signal-skip" href="#signal-main">Skip to content</a>
     <AtlantaClock />
     <main id="signal-main" className="signal-main">
@@ -413,10 +503,8 @@ export default function SignalPortfolio() {
                 {jobPositions.map((job, index) => <div className="signal-detail-item" key={job.place + index}>
                   <DetailRow title={job.place === "Georgia Tech School of Cybersecurity and Privacy" ? "Georgia Tech" : job.place} subtitle={job.currentPosition} meta={job.timeline} open={expandedJobs.has(index)} onClick={() => toggleJob(index)} id={"signal-job-" + index} index={index} />
                   {openedJobs.has(index) && <div className="signal-detail-content" id={"signal-job-" + index} hidden={!expandedJobs.has(index)}>
-                    <DecodeTogether>
-                      <ul className="signal-bullets">{job.bullets.map(bullet => <li key={bullet}><DecodeText text={bullet} byLine /></li>)}</ul>
+                      <ul className="signal-bullets">{job.bullets.map(bullet => <li key={bullet}>{bullet}</li>)}</ul>
                       <Skills skills={job.skills} />
-                    </DecodeTogether>
                   </div>}
                 </div>)}
               </DecodeTogether>
@@ -432,15 +520,13 @@ export default function SignalPortfolio() {
                   {jobProjects.map((project, index) => project.category === category ? <div className="signal-detail-item" key={project.title}>
                     <DetailRow title={project.title} open={expandedProjects.has(index)} onClick={() => toggleProject(index)} id={"signal-project-" + index} index={index} />
                     {openedProjects.has(index) && <div className="signal-detail-content" id={"signal-project-" + index} hidden={!expandedProjects.has(index)}>
-                      <DecodeTogether>
-                        <ul className="signal-bullets">{project.bullets.map(bullet => <li key={bullet}><DecodeText text={bullet} byLine /></li>)}</ul>
+                        <ul className="signal-bullets">{project.bullets.map(bullet => <li key={bullet}>{bullet}</li>)}</ul>
                         <Skills skills={project.skills} />
                         {project.link && <a className="signal-project-link" href={project.link} target="_blank" rel="noopener noreferrer">
                           <span className="signal-project-link-icon"><Github size={15} aria-hidden="true" /></span>
-                          <span className="signal-project-link-copy"><small>github</small><strong><DecodeText text="Open repository" /></strong></span>
+                          <span className="signal-project-link-copy"><small>github</small><strong>Open repository</strong></span>
                           <ArrowUpRight className="signal-project-link-arrow" size={14} aria-hidden="true" />
                         </a>}
-                      </DecodeTogether>
                     </div>}
                   </div> : null)}
                 </div>)}
