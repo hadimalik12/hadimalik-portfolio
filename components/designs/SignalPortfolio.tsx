@@ -332,7 +332,7 @@ function QuoteCorner() {
         <span>next</span><span aria-hidden="true">→</span>
       </button>
     </div>}
-    <button className="signal-quote-launcher" type="button" aria-expanded={open} onClick={() => setOpen(current => !current)} aria-label={open ? "Close favorite quote" : "Show a favorite quote"} data-tooltip="quotes">
+    <button className="signal-quote-launcher" type="button" aria-expanded={open} onClick={() => setOpen(current => !current)} aria-label={open ? "Close favorite quote" : "Show a favorite quote"} data-tooltip="favorite quotes">
       <QuoteTextInline aria-hidden="true" />
     </button>
   </aside>;
